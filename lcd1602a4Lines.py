@@ -53,17 +53,25 @@ def writeCharacter(c):
     sleep(0.001)
     GPIO.output(e, GPIO.LOW)
 
+def setCursor(column, row):
+    writeCommand(0x80 + column + row * 0x40)
+
+def clearScreen():
+    writeCommand(0x0c)
+    writeCommand(0x01)
+
 def writeString(s):
-    writeCommand(0x80)
-    for c in s[:16]:
-        writeCharacter(c)
-    writeCommand(0x80 + 0x40)
-    for c in s[16:]:
-        writeCharacter(c)
+    for c in s:
+        if c == '\n':
+            row = 1
+            column = 0
+            setCursor(column, row)
+        else:
+            writeCharacter(c)
 
 if __name__ == '__main__':
     initial1602()
     try:
-        writeString("Hello, World!")
+        writeString("Hello, \n World!")
     except KeyboardInterrupt:
         GPIO.cleanup()
